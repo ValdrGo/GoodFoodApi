@@ -1,0 +1,91 @@
+basePath: /
+definitions:
+  model.Ingredient:
+    properties:
+      amount:
+        description: 'Количество: "200мл"'
+        type: string
+      name:
+        description: 'Название: "Молоко"'
+        type: string
+    type: object
+  model.Recipe:
+    properties:
+      carbs:
+        type: integer
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      fat:
+        type: integer
+      id:
+        type: integer
+      ingredients:
+        description: Слайс (массив) ингредиентов
+        items:
+          $ref: '#/definitions/model.Ingredient'
+        type: array
+      instructions:
+        type: string
+      kcal:
+        type: integer
+      protein:
+        type: integer
+      title:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: |-
+    API для получения случайных рецептов блюд
+
+    Категории: breakfast, lunch, dinner, snack
+  title: GoodFood API
+  version: "1.0"
+paths:
+  /api/recipe:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает случайный рецепт из выбранной категории (breakfast,
+        lunch, dinner, snack)
+      parameters:
+      - description: Категория блюда
+        enum:
+        - breakfast
+        - lunch
+        - dinner
+        - snack
+        in: query
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Recipe'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить случайный рецепт
+      tags:
+      - recipes
+schemes:
+- http
+swagger: "2.0"

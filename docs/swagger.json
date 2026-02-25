@@ -1,0 +1,129 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "API для получения случайных рецептов блюд\n\nКатегории: breakfast, lunch, dinner, snack",
+        "title": "GoodFood API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/recipe": {
+            "get": {
+                "description": "Возвращает случайный рецепт из выбранной категории (breakfast, lunch, dinner, snack)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recipes"
+                ],
+                "summary": "Получить случайный рецепт",
+                "parameters": [
+                    {
+                        "enum": [
+                            "breakfast",
+                            "lunch",
+                            "dinner",
+                            "snack"
+                        ],
+                        "type": "string",
+                        "description": "Категория блюда",
+                        "name": "category",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Recipe"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.Ingredient": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Количество: \"200мл\"",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Название: \"Молоко\"",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Recipe": {
+            "type": "object",
+            "properties": {
+                "carbs": {
+                    "type": "integer"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "fat": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ingredients": {
+                    "description": "Слайс (массив) ингредиентов",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Ingredient"
+                    }
+                },
+                "instructions": {
+                    "type": "string"
+                },
+                "kcal": {
+                    "type": "integer"
+                },
+                "protein": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
