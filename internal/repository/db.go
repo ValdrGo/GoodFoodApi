@@ -16,33 +16,19 @@ type DB struct {
 
 // NewDB создаёт новое подключение к базе данных.
 func NewDB(ctx context.Context) (*DB, error) {
-	// Читаем настройки из переменных окружения (.env)
-	user := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
-	host := "localhost"
-	port := os.Getenv("DB_PORT")
-	dbName := os.Getenv("POSTGRES_DB")
-
-	// Формируем строку подключения (DSN)
-	connStr := fmt.Sprintf(
-		"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
-		user, password, host, port, dbName,
-	)
-
-	// Создаём пул соединений
-	pool, err := pgxpool.New(ctx, connStr)
-	if err != nil {
-		return nil, fmt.Errorf("ошибка создания пула: %w", err)
+	// 🎯 ВАРИАНТ 1: Читаем DATABASE_URL (для Render/Neon)
+	connStr := os.Getenv("DATABASE_URL")
+	if connStr != "" {
+		pool, err := pgxpool.New(ctx, connStr)
+		if err != nil {
+			return nil, fmt.Errorf("ошибка создания пула из DATABASE_URL: %w", err)
+		}
+		if err := pool.Ping(ctx); err != nil {
+			return nil, fmt.Errorf("ошибка подключения к базе: %w", err)
+		}
+		log.Println("✅ Подключение к базе данных успешно (через DATABASE_URL)!")
+		return &DB{Pool: pool}, nil
 	}
-
-	// Проверяем, что база действительно отвечает
-	if err := pool.Ping(ctx); err != nil {
-		return nil, fmt.Errorf("ошибка подключения к базе: %w", err)
-	}
-
-	log.Println("✅ Подключение к базе данных успешно!")
-	return &DB{Pool: pool}, nil
-}
 
 // InitDB создаёт таблицы, если их ещё нет.
 // Обрати внимание: (db *DB) — это привязка метода к структуре.
