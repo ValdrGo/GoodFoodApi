@@ -30,9 +30,46 @@ func NewDB(ctx context.Context) (*DB, error) {
 		return &DB{Pool: pool}, nil
 	}
 
+	// 🎯 ВАРИАНТ 2: Фолбэк на отдельные переменные (для локальной разработки)
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	host := os.Getenv("POSTGRES_HOST")
+	if host == "" {
+		host = "localhost"
+	}
+	port := os.Getenv("DB_PORT")
+	if port == "" {
+		port = "5432"
+	}
+	dbName := os.Getenv("POSTGRES_DB")
+	sslmode := os.Getenv("DB_SSLMODE")
+	if sslmode == "" {
+		sslmode = "disable"
+	}
+
+	// Формируем строку подключения
+	connStr = fmt.Sprintf(
+		"user=%s password=%s host=%s port=%s dbname=%s sslmode=%s",
+		user, password, host, port, dbName, sslmode,
+	)
+
+	// Создаём пул соединений
+	pool, err := pgxpool.New(ctx, connStr)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка создания пула: %w", err)
+	}
+
+	// Проверяем подключение
+	if err := pool.Ping(ctx); err != nil {
+		return nil, fmt.Errorf("ошибка подключения к базе: %w", err)
+	}
+
+	log.Println("✅ Подключение к базе данных успешно!")
+	return &DB{Pool: pool}, nil
+}
+
 // InitDB создаёт таблицы, если их ещё нет.
-// Обрати внимание: (db *DB) — это привязка метода к структуре.
-// А InitDB с большой буквы — делает метод видимым снаружи.
+// Метод с большой буквы — экспортирован (виден снаружи пакета).
 func (db *DB) InitDB(ctx context.Context) error {
 	query := `
 	CREATE TABLE IF NOT EXISTS recipes (
@@ -62,6 +99,7 @@ func (db *DB) InitDB(ctx context.Context) error {
 }
 
 // Close закрывает все соединения в пуле.
+// Метод с большой буквы — экспортирован (виден снаружи пакета).
 func (db *DB) Close() {
 	if db.Pool != nil {
 		db.Pool.Close()
