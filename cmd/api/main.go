@@ -12,7 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	_ "goodfood-app/docs" // Добавлен импорт документации
+	_ "goodfood-app/docs"
 	"goodfood-app/internal/handler"
 	"goodfood-app/internal/repository"
 	"goodfood-app/internal/service"
@@ -51,9 +51,7 @@ func main() {
 	recipeService := service.NewRecipeService(recipeRepo)
 	recipeHandler := handler.NewRecipeHandler(recipeService)
 
-	// ✅ Роутинг (регистрируем ВСЕ маршруты ДО запуска сервера)
-
-	// Твой API
+	// ✅ Роутинг
 	http.HandleFunc("/api/recipe", middleware.CORS(recipeHandler.GetRandomRecipe))
 
 	// Swagger UI
@@ -63,11 +61,16 @@ func main() {
 		httpSwagger.DeepLinking(true),
 	))
 
-	// Запуск сервера
-	server := &http.Server{Addr: ":8080"}
+	// 🎯 Запуск сервера (порт из переменной окружения для Render)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	server := &http.Server{Addr: ":" + port}
 
 	go func() {
-		log.Println("🚀 Server starting on http://localhost:8080")
+		log.Printf("🚀 Server starting on port %s", port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server failed: %v", err)
 		}
