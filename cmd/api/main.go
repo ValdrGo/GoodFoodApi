@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"goodfood-app/internal/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -26,8 +27,9 @@ import (
 // @BasePath /
 // @schemes http
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("Warning: .env file not found, using system env vars")
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("⚠️ .env не найден, используем переменные окружения")
 	}
 
 	ctx := context.Background()
@@ -52,7 +54,7 @@ func main() {
 	// ✅ Роутинг (регистрируем ВСЕ маршруты ДО запуска сервера)
 
 	// Твой API
-	http.HandleFunc("/api/recipe", recipeHandler.GetRandomRecipe)
+	http.HandleFunc("/api/recipe", middleware.CORS(recipeHandler.GetRandomRecipe))
 
 	// Swagger UI
 	http.HandleFunc("/swagger/", httpSwagger.Handler(

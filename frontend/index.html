@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ GoodFood - Случайные рецепты</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .category-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .category-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .category-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .category-btn:active {
+            transform: translateY(0);
+        }
+
+        .breakfast { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .lunch { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .dinner { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .snack { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+
+        .recipe-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .recipe-card.show {
+            display: block;
+        }
+
+        .recipe-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .recipe-category {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .recipe-description {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .recipe-section {
+            margin-bottom: 25px;
+        }
+
+        .recipe-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .ingredients-list {
+            list-style: none;
+        }
+
+        .ingredients-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            color: #555;
+        }
+
+        .ingredients-list li:last-child {
+            border-bottom: none;
+        }
+
+        .instructions {
+            color: #555;
+            line-height: 1.8;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .nutrition-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .nutrition-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .nutrition-item .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .nutrition-item .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            padding: 50px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .api-link {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+        }
+
+        .api-link a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        .api-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .category-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .recipe-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ GoodFood</h1>
+            <p>Случайные рецепты для каждого приёма пищи</p>
+        </header>
+
+        <div class="category-buttons">
+            <button class="category-btn breakfast" onclick="getRecipe('breakfast')">🍳 Завтрак</button>
+            <button class="category-btn lunch" onclick="getRecipe('lunch')">🍲 Обед</button>
+            <button class="category-btn dinner" onclick="getRecipe('dinner')">🍝 Ужин</button>
+            <button class="category-btn snack" onclick="getRecipe('snack')">🥗 Перекус</button>
+        </div>
+
+        <div class="loading" id="loading">
+            ⏳ Загружаем рецепт...
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="recipe-card" id="recipeCard">
+            <h2 class="recipe-title" id="recipeTitle"></h2>
+            <span class="recipe-category" id="recipeCategory"></span>
+            <p class="recipe-description" id="recipeDescription"></p>
+
+            <div class="recipe-section">
+                <h3>🥘 Ингредиенты</h3>
+                <ul class="ingredients-list" id="ingredientsList"></ul>
+            </div>
+
+            <div class="recipe-section">
+                <h3>👨‍🍳 Приготовление</h3>
+                <div class="instructions" id="instructions"></div>
+            </div>
+
+            <div class="recipe-section">
+                <h3>📊 КБЖУ</h3>
+                <div class="nutrition-info">
+                    <div class="nutrition-item">
+                        <span class="value" id="kcal">0</span>
+                        <span class="label">Ккал</span>
+                    </div>
+                    <div class="nutrition-item">
+                        <span class="value" id="protein">0г</span>
+                        <span class="label">Белки</span>
+                    </div>
+                    <div class="nutrition-item">
+                        <span class="value" id="fat">0г</span>
+                        <span class="label">Жиры</span>
+                    </div>
+                    <div class="nutrition-item">
+                        <span class="value" id="carbs">0г</span>
+                        <span class="label">Углеводы</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-link">
+            <p>🔧 API: <a href="http://localhost:8080/swagger/index.html" target="_blank">http://localhost:8080/swagger/index.html</a></p>
+            <p>💻 GitHub: <a href="https://github.com/ValdrGo/GoodFoodApi" target="_blank">github.com/ValdrGo/GoodFoodApi</a></p>
+        </div>
+    </div>
+
+    <script>
+        // URL твоего API (сейчас локальный, потом заменим на серверный)
+        const API_URL = 'http://localhost:8080/api/recipe';
+
+        async function getRecipe(category) {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const recipeCard = document.getElementById('recipeCard');
+
+            // Скрываем всё перед загрузкой
+            loading.classList.add('show');
+            error.classList.remove('show');
+            recipeCard.classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_URL}?category=${category}`);
+                
+                if (!response.ok) {
+                    throw new Error('Рецепт не найден');
+                }
+
+                const data = await response.json();
+
+                // Заполняем карточку рецепта
+                document.getElementById('recipeTitle').textContent = data.title;
+                document.getElementById('recipeCategory').textContent = getCategoryName(data.category);
+                document.getElementById('recipeDescription').textContent = data.description;
+
+                // Заполняем ингредиенты
+                const ingredientsList = document.getElementById('ingredientsList');
+                ingredientsList.innerHTML = '';
+                data.ingredients.forEach(ing => {
+                    const li = document.createElement('li');
+                    li.textContent = `${ing.name} — ${ing.amount}`;
+                    ingredientsList.appendChild(li);
+                });
+
+                // Заполняем инструкцию
+                document.getElementById('instructions').textContent = data.instructions;
+
+                // Заполняем КБЖУ
+                document.getElementById('kcal').textContent = data.kcal;
+                document.getElementById('protein').textContent = data.protein + 'г';
+                document.getElementById('fat').textContent = data.fat + 'г';
+                document.getElementById('carbs').textContent = data.carbs + 'г';
+
+                // Показываем карточку
+                loading.classList.remove('show');
+                recipeCard.classList.add('show');
+
+            } catch (err) {
+                loading.classList.remove('show');
+                error.textContent = '❌ ' + err.message;
+                error.classList.add('show');
+            }
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'breakfast': '🍳 Завтрак',
+                'lunch': '🍲 Обед',
+                'dinner': '🍝 Ужин',
+                'snack': '🥗 Перекус'
+            };
+            return names[category] || category;
+        }
+    </script>
+</body>
+</html>
