@@ -3,253 +3,512 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍽️ GoodFood - Случайные рецепты</title>
+    <title>🍽️ GoodFood — Ешь больше, худей легче</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d4f1dc 0%, #a8e6cf 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #2d3748;
+        }
+
+        /* 🧭 НОВОЕ ВЕРХНЕЕ МЕНЮ */
+        .top-nav {
+            width: 100%;
+            max-width: 900px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 10px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a5f3a;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Кнопки меню */
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6bcb77 0%, #4caf8a 100%);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(107, 203, 119, 0.5);
+        }
+
+        .nav-btn:active { transform: translateY(0); }
+
+        /* 🚧 Бейдж "В разработке" */
+        .nav-btn.wip::after {
+            content: '🚧';
+            font-size: 0.8rem;
+            margin-left: 4px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* Тултип при наведении на WIP-кнопки */
+        .nav-btn.wip {
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        .nav-btn.wip:hover::before {
+            content: '✨ Эта функция в разработке! Скоро будет 🎉';
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #1a5f3a;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            margin-top: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container {
-            max-width: 800px;
+            max-width: 700px;
+            width: 100%;
             margin: 0 auto;
+            flex: 1;
+            padding: 0 20px;
         }
 
         header {
             text-align: center;
-            color: white;
-            margin-bottom: 30px;
+            margin: 15px 0 30px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         header h1 {
-            font-size: 2.5rem;
+            font-size: 2.1rem;
             margin-bottom: 10px;
+            color: #1a5f3a;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            letter-spacing: -0.5px;
         }
 
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        header .tagline {
+            font-size: 1.15rem;
+            color: #2d6a4f;
+            font-weight: 500;
+            line-height: 1.5;
+            opacity: 0.95;
         }
 
+        /* 🔘 КНОПКИ КАТЕГОРИЙ — ВЕРТИКАЛЬНО + ЦЕНТР */
         .category-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 35px;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .category-btn {
-            padding: 20px;
+            padding: 20px 24px;
             border: none;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            border-radius: 18px;
+            font-size: 1.2rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+            position: relative;
+            overflow: hidden;
+            /* ✅ ЦЕНТРИРОВАНИЕ КОНТЕНТА */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
         }
 
-        .category-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        .category-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            transition: left 0.5s;
         }
 
-        .category-btn:active {
-            transform: translateY(0);
-        }
+        .category-btn:hover::after { left: 100%; }
+        .category-btn:hover { transform: translateX(6px); box-shadow: 0 8px 28px rgba(0,0,0,0.18); }
+        .category-btn:active { transform: translateX(2px); }
 
-        .breakfast { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .lunch { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .dinner { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-        .snack { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+        .breakfast { background: linear-gradient(135deg, #ffd966 0%, #ffc947 100%); color: #5a4a00; }
+        .lunch { background: linear-gradient(135deg, #87ceeb 0%, #6bb6d9 100%); color: #003d5c; }
+        .dinner { background: linear-gradient(135deg, #ffb3ba 0%, #ff9aa2 100%); color: #5c001a; }
+        .snack { background: linear-gradient(135deg, #b5e7a0 0%, #93d47e 100%); color: #1a4d2e; }
 
         .recipe-card {
             background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border-radius: 26px;
+            padding: 38px 32px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.15);
             display: none;
             animation: slideIn 0.5s ease;
+            margin-bottom: 35px;
+            border: 1px solid rgba(107, 203, 119, 0.2);
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .recipe-card.show {
-            display: block;
-        }
+        .recipe-card.show { display: block; }
 
         .recipe-title {
-            font-size: 2rem;
-            color: #333;
-            margin-bottom: 10px;
+            font-size: 1.9rem;
+            color: #1a5f3a;
+            margin-bottom: 14px;
+            line-height: 1.35;
+            font-weight: 700;
+            text-align: center;
         }
 
         .recipe-category {
-            display: inline-block;
-            padding: 5px 15px;
-            background: #667eea;
+            display: flex;
+            justify-content: center;
+            padding: 7px 20px;
+            background: linear-gradient(135deg, #6bcb77 0%, #4caf8a 100%);
             color: white;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
+            border-radius: 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 auto 22px;
+            box-shadow: 0 4px 14px rgba(107, 203, 119, 0.45);
         }
 
         .recipe-description {
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            line-height: 1.6;
+            color: #4a5568;
+            font-size: 1.15rem;
+            margin-bottom: 28px;
+            line-height: 1.75;
+            padding: 18px 20px;
+            background: #f0fdf4;
+            border-radius: 14px;
+            border-left: 4px solid #6bcb77;
+            text-align: center;
         }
 
-        .recipe-section {
-            margin-bottom: 25px;
-        }
-
+        .recipe-section { margin-bottom: 30px; }
         .recipe-section h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
+            color: #1a5f3a;
+            margin-bottom: 16px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
         }
 
-        .ingredients-list {
-            list-style: none;
-        }
-
+        .ingredients-list { list-style: none; }
         .ingredients-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-            color: #555;
+            padding: 14px 18px;
+            border-bottom: 1px solid #e8f5e9;
+            color: #374151;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            font-size: 1.05rem;
         }
-
-        .ingredients-list li:last-child {
-            border-bottom: none;
+        .ingredients-list li:hover { 
+            background: #f0fdf4; 
+            border-radius: 10px; 
+            transform: translateX(4px);
+        }
+        .ingredients-list li:last-child { border-bottom: none; }
+        .ingredients-list li::before {
+            content: '🥄';
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        .ingredients-list li strong {
+            color: #1a5f3a;
+            font-weight: 600;
+            background: #e8f5e9;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.95rem;
         }
 
         .instructions {
-            color: #555;
-            line-height: 1.8;
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
+            color: #374151;
+            line-height: 2;
+            background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
+            padding: 24px;
+            border-radius: 16px;
+            white-space: pre-line;
+            font-size: 1.05rem;
+            border: 1px solid #c8e6c9;
         }
 
         .nutrition-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 22px;
         }
 
         .nutrition-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6bcb77 0%, #4caf8a 100%);
             color: white;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 16px 10px;
+            border-radius: 14px;
             text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .nutrition-item .value {
-            font-size: 1.5rem;
-            font-weight: bold;
+        .nutrition-item:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 8px 22px rgba(107, 203, 119, 0.5);
+        }
+        .nutrition-item .value { 
+            font-size: 1.7rem; 
+            font-weight: 700; 
+            display: block; 
+            line-height: 1.1;
+        }
+        .nutrition-item .label { 
+            font-size: 0.85rem; 
+            opacity: 0.95; 
+            margin-top: 4px;
             display: block;
         }
 
-        .nutrition-item .label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .loading {
+        .loading, .error {
             text-align: center;
-            color: white;
-            font-size: 1.5rem;
-            padding: 50px;
+            padding: 45px 30px;
+            border-radius: 18px;
+            margin: 25px 0;
             display: none;
+            font-size: 1.15rem;
+        }
+        .loading { 
+            color: #1a5f3a; 
+            background: rgba(107, 203, 119, 0.15); 
+            font-weight: 500;
+        }
+        .loading.show { display: block; animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
+
+        .error { 
+            background: #fee2e2; 
+            color: #991b1b; 
+            font-weight: 500; 
+            border: 1px solid #fecaca;
+        }
+        .error.show { display: block; animation: shake 0.5s; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
         }
 
-        .loading.show {
-            display: block;
-        }
-
-        .error {
-            background: #ff6b6b;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+        /* 🦶 ФУТЕР */
+        .footer {
             text-align: center;
-            display: none;
+            padding: 30px 20px 50px;
+            font-size: 0.95rem;
+            color: #1a5f3a;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px 20px 0 0;
+            margin-top: auto;
+            width: 100%;
+            max-width: 900px;
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(107, 203, 119, 0.3);
         }
 
-        .error.show {
-            display: block;
+        .footer .author {
+            font-weight: 700;
+            margin-bottom: 14px;
+            font-size: 1.1rem;
+            color: #1a5f3a;
         }
 
-        .api-link {
-            text-align: center;
-            margin-top: 30px;
-            color: white;
+        .footer .contacts {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
         }
 
-        .api-link a {
-            color: #ffd700;
+        .footer a {
+            color: #166534;
             text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            background: rgba(107, 203, 119, 0.15);
         }
 
-        .api-link a:hover {
-            text-decoration: underline;
+        .footer a:hover {
+            background: rgba(107, 203, 119, 0.35);
+            color: #064e3b;
+            transform: translateY(-2px);
         }
 
+        .footer .divider { color: #6bcb77; font-weight: 300; opacity: 0.7; }
+
+        .footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding-top: 18px;
+            border-top: 1px dashed rgba(107, 203, 119, 0.4);
+            font-size: 0.9rem;
+        }
+
+        .footer .links a {
+            color: #047857;
+            background: none;
+            padding: 4px 8px;
+        }
+        .footer .links a:hover {
+            background: rgba(107, 203, 119, 0.2);
+            color: #065f46;
+        }
+
+        /* 📱 МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 600px) {
-            header h1 {
-                font-size: 2rem;
+            .top-nav {
+                padding: 12px 15px;
+                flex-wrap: wrap;
+                gap: 10px;
             }
-            
-            .category-buttons {
-                grid-template-columns: repeat(2, 1fr);
+            .nav-left { font-size: 1.15rem; }
+            .nav-right { 
+                width: 100%; 
+                justify-content: center; 
+                flex-wrap: wrap;
             }
-            
-            .recipe-title {
-                font-size: 1.5rem;
+            .nav-btn { 
+                padding: 8px 14px; 
+                font-size: 0.9rem; 
+                flex: 1 1 auto;
+                max-width: 140px;
+                justify-content: center;
             }
+            header h1 { font-size: 1.8rem; }
+            header .tagline { font-size: 1.05rem; }
+            .category-btn { padding: 18px 20px; font-size: 1.1rem; }
+            .recipe-title { font-size: 1.6rem; }
+            .nutrition-info { grid-template-columns: repeat(2, 1fr); }
+            .footer .contacts { flex-direction: column; gap: 12px; }
+            .footer .links { flex-direction: column; gap: 8px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- 🧭 ВЕРХНЕЕ МЕНЮ -->
+    <nav class="top-nav">
+        <div class="nav-left">🍽️ GoodFood</div>
+        <div class="nav-right">
+            <button class="nav-btn wip" title="В разработке">🔍 Поиск</button>
+            <button class="nav-btn wip" title="В разработке">🥗 Диеты</button>
+            <button class="nav-btn wip" title="В разработке">❤️ Избранное</button>
+            <button class="nav-btn wip" title="В разработке">👤 Войти</button>
+        </div>
+    </nav>
+
     <div class="container">
         <header>
-            <h1>🍽️ GoodFood</h1>
-            <p>Случайные рецепты для каждого приёма пищи</p>
+            <h1>GoodFood</h1>
+            <p class="tagline">Ешь больше — худей легче.<br>Вкусно. Полезно. Без напряга.</p>
         </header>
 
+        <!-- 🔘 КНОПКИ КАТЕГОРИЙ (вертикально, контент по центру) -->
         <div class="category-buttons">
-            <button class="category-btn breakfast" onclick="getRecipe('breakfast')">🍳 Завтрак</button>
-            <button class="category-btn lunch" onclick="getRecipe('lunch')">🍲 Обед</button>
-            <button class="category-btn dinner" onclick="getRecipe('dinner')">🍝 Ужин</button>
-            <button class="category-btn snack" onclick="getRecipe('snack')">🥗 Перекус</button>
+            <button class="category-btn breakfast" onclick="getRecipe('breakfast')">
+                🍳 Завтрак
+            </button>
+            <button class="category-btn lunch" onclick="getRecipe('lunch')">
+                🍲 Обед
+            </button>
+            <button class="category-btn dinner" onclick="getRecipe('dinner')">
+                🍝 Ужин
+            </button>
+            <button class="category-btn snack" onclick="getRecipe('snack')">
+                🥗 Перекус
+            </button>
         </div>
 
-        <div class="loading" id="loading">
-            ⏳ Загружаем рецепт...
-        </div>
-
+        <div class="loading" id="loading">🌱 Подбираем идеальный рецепт...</div>
         <div class="error" id="error"></div>
 
         <div class="recipe-card" id="recipeCard">
@@ -268,44 +527,39 @@
             </div>
 
             <div class="recipe-section">
-                <h3>📊 КБЖУ</h3>
+                <h3>📊 КБЖУ на порцию</h3>
                 <div class="nutrition-info">
-                    <div class="nutrition-item">
-                        <span class="value" id="kcal">0</span>
-                        <span class="label">Ккал</span>
-                    </div>
-                    <div class="nutrition-item">
-                        <span class="value" id="protein">0г</span>
-                        <span class="label">Белки</span>
-                    </div>
-                    <div class="nutrition-item">
-                        <span class="value" id="fat">0г</span>
-                        <span class="label">Жиры</span>
-                    </div>
-                    <div class="nutrition-item">
-                        <span class="value" id="carbs">0г</span>
-                        <span class="label">Углеводы</span>
-                    </div>
+                    <div class="nutrition-item"><span class="value" id="kcal">0</span><span class="label">ккал</span></div>
+                    <div class="nutrition-item"><span class="value" id="protein">0г</span><span class="label">белки</span></div>
+                    <div class="nutrition-item"><span class="value" id="fat">0г</span><span class="label">жиры</span></div>
+                    <div class="nutrition-item"><span class="value" id="carbs">0г</span><span class="label">углеводы</span></div>
                 </div>
             </div>
         </div>
-
-        <div class="api-link">
-            <p>🔧 API: <a href="http://localhost:8080/swagger/index.html" target="_blank">http://localhost:8080/swagger/index.html</a></p>
-            <p>💻 GitHub: <a href="https://github.com/ValdrGo/GoodFoodApi" target="_blank">github.com/ValdrGo/GoodFoodApi</a></p>
-        </div>
     </div>
 
+    <!-- 🦶 ФУТЕР -->
+    <footer class="footer">
+        <div class="author">Сделано с ❤️ Владимиром Плужниковым</div>
+        <div class="contacts">
+            <a href="mailto:valldr.go@gmail.com">📧 valldr.go@gmail.com</a>
+            <span class="divider">|</span>
+            <a href="https://t.me/valdr777" target="_blank">✈️ @valdr777</a>
+        </div>
+        <div class="links">
+            <a href="https://goodfoodapi.onrender.com/swagger/index.html" target="_blank">🔧 API Docs</a>
+            <a href="https://github.com/ValdrGo/GoodFoodApi" target="_blank">💻 GitHub</a>
+        </div>
+    </footer>
+
     <script>
-        // URL твоего API (сейчас локальный, потом заменим на серверный)
-        const API_URL = 'http://localhost:8080/api/recipe';
+        const API_URL = 'https://goodfoodapi.onrender.com/api/recipe';
 
         async function getRecipe(category) {
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
             const recipeCard = document.getElementById('recipeCard');
 
-            // Скрываем всё перед загрузкой
             loading.classList.add('show');
             error.classList.remove('show');
             recipeCard.classList.remove('show');
@@ -314,54 +568,67 @@
                 const response = await fetch(`${API_URL}?category=${category}`);
                 
                 if (!response.ok) {
+                    if (response.status === 502 || response.status === 503) {
+                        throw new Error('Сервис просыпается... ⏳ Подождите ~30 сек и попробуйте снова');
+                    }
                     throw new Error('Рецепт не найден');
                 }
 
                 const data = await response.json();
 
-                // Заполняем карточку рецепта
                 document.getElementById('recipeTitle').textContent = data.title;
                 document.getElementById('recipeCategory').textContent = getCategoryName(data.category);
                 document.getElementById('recipeDescription').textContent = data.description;
 
-                // Заполняем ингредиенты
                 const ingredientsList = document.getElementById('ingredientsList');
                 ingredientsList.innerHTML = '';
                 data.ingredients.forEach(ing => {
                     const li = document.createElement('li');
-                    li.textContent = `${ing.name} — ${ing.amount}`;
+                    li.innerHTML = `<span>${ing.name}</span><strong>${ing.amount}</strong>`;
                     ingredientsList.appendChild(li);
                 });
 
-                // Заполняем инструкцию
-                document.getElementById('instructions').textContent = data.instructions;
+                document.getElementById('instructions').textContent = data.instructions.replace(/\\n/g, '\n');
 
-                // Заполняем КБЖУ
                 document.getElementById('kcal').textContent = data.kcal;
                 document.getElementById('protein').textContent = data.protein + 'г';
                 document.getElementById('fat').textContent = data.fat + 'г';
                 document.getElementById('carbs').textContent = data.carbs + 'г';
 
-                // Показываем карточку
                 loading.classList.remove('show');
                 recipeCard.classList.add('show');
+                recipeCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             } catch (err) {
                 loading.classList.remove('show');
                 error.textContent = '❌ ' + err.message;
                 error.classList.add('show');
+                error.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
         function getCategoryName(category) {
             const names = {
                 'breakfast': '🍳 Завтрак',
-                'lunch': '🍲 Обед',
+                'lunch': '🍲 Обед', 
                 'dinner': '🍝 Ужин',
                 'snack': '🥗 Перекус'
             };
             return names[category] || category;
         }
+
+        // 🚧 Обработчик для кнопок "В разработке"
+        document.querySelectorAll('.nav-btn.wip').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Показываем мягкое уведомление
+                const originalText = btn.textContent;
+                btn.textContent = '✨ Скоро!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 1500);
+            });
+        });
     </script>
 </body>
 </html>
